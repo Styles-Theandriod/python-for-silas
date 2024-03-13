@@ -1,0 +1,71 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class TicTacToe:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Tic-Tac-Toe")
+
+        # Player X starts
+        self.current_player = "X"
+
+        # Initialize the board
+        self.board = [[' ']*3 for _ in range(3)]
+
+        # Create buttons for the game board
+        self.buttons = [[None]*3 for _ in range(3)]
+        for i in range(3):
+            for j in range(3):
+                self.buttons[i][j] = tk.Button(self.root, text='', font=('Arial', 24), width=5, height=2,
+                                               command=lambda row=i, col=j: self.on_button_click(row, col))
+                self.buttons[i][j].grid(row=i, column=j)
+
+    def on_button_click(self, row, col):
+        # Check if the cell is empty
+        if self.board[row][col] == ' ':
+            # Update the board and button text
+            self.board[row][col] = self.current_player
+            self.buttons[row][col].config(text=self.current_player)
+
+            # Check for a winner
+            if self.check_winner(row, col):
+                messagebox.showinfo("Winner", f"Player {self.current_player} wins!")
+                self.reset_game()
+            elif self.is_board_full():
+                messagebox.showinfo("Tie", "The game is a tie!")
+                self.reset_game()
+            else:
+                # Switch players
+                self.current_player = 'O' if self.current_player == 'X' else 'X'
+
+    def check_winner(self, row, col):
+        # Check row
+        if all(self.board[row][c] == self.current_player for c in range(3)):
+            return True
+        # Check column
+        if all(self.board[r][col] == self.current_player for r in range(3)):
+            return True
+        # Check diagonals
+        if all(self.board[i][i] == self.current_player for i in range(3)) or \
+           all(self.board[i][2-i] == self.current_player for i in range(3)):
+            return True
+        return False
+
+    def is_board_full(self):
+        return all(self.board[i][j] != ' ' for i in range(3) for j in range(3))
+
+    def reset_game(self):
+        # Reset the board and buttons
+        self.board = [[' ']*3 for _ in range(3)]
+        for i in range(3):
+            for j in range(3):
+                self.buttons[i][j].config(text='')
+        # Player X starts
+        self.current_player = 'X'
+
+    def run(self):
+        self.root.mainloop()
+
+# Create and run the Tic-Tac-Toe game
+tic_tac_toe = TicTacToe()
+tic_tac_toe.run()
